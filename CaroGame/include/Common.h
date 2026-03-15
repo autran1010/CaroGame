@@ -1,20 +1,26 @@
-﻿#pragma once
-#include <iostream>		
-#include <Windows.h> 
-#include <conio.h>
+﻿#ifndef COMMON_H
+#define COMMON_H
 
-using namespace std;
+// Không include thư viện hệ thống ở đây để tránh conflict
 
-// ------ Hằng số ------
-#define BOARD_SIZE 12 
-#define LEFT 3 
-#define TOP 1 
+// --- CÁC HẰNG SỐ CỦA BÀN CỜ ---
+#define BOARD_SIZE 12  // Kích thước bàn cờ (12x12)
+#define CELL_SIZE 40   // Kích thước mỗi ô vuông (40x40 pixel)
+#define OFFSET_X 100   // Khoảng cách từ mép trái màn hình đến bàn cờ (pixel)
+#define OFFSET_Y 100   // Khoảng cách từ mép trên màn hình đến bàn cờ (pixel)
+#define LEFT 3
+#define TOP 1
 
-// ------ Khai báo kiểu dữ liệu ------
-struct _POINT { int x, y, c; };
+// --- CẤU TRÚC DỮ LIỆU ---
+struct _POINT {
+    int x, y; // Tọa độ pixel để nhóm View vẽ 
+    int c;    // Trạng thái ô cờ: 0 (Trống), -1 (Quân X), 1 (Quân O)
+};
 
-// ------ Khai báo biến toàn cục (Dùng extern) ------
-extern _POINT _A[BOARD_SIZE][BOARD_SIZE];
-extern bool _TURN;
+// --- BIẾN TOÀN CỤC (Khai báo extern để các file .cpp dùng chung) ---
+extern _POINT _A[BOARD_SIZE][BOARD_SIZE]; // Mảng 2 chiều chứa dữ liệu bàn cờ
+extern bool _TURN;                        // Lượt đi: true (X), false (O)
 extern int _COMMAND;
 extern int _X, _Y;
+
+#endif
