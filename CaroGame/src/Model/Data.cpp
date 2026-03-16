@@ -4,7 +4,6 @@
 using namespace std;
 
 // ĐỊNH NGHĨA BIẾN TOÀN CỤC TẠI ĐÂY (Chỉ 1 lần duy nhất)
-_POINT _A[BOARD_SIZE][BOARD_SIZE];   // Mảng 2 chiều chứa dữ liệu bàn cờ (Logic)
 char _BOARD[BOARD_SIZE][BOARD_SIZE]; // Mảng này dùng để lưu trạng thái bàn cờ khi cần thiết (ví dụ: lưu vào file)
 int _ROW, _COL;                      // Biến toàn cục lưu vị trí logic của ô hiện hành (hàng, cột)
 bool _TURN;                          // Biến toàn cục lưu lượt chơi hiện hành (true = X, false = O)
@@ -41,7 +40,7 @@ void ResetData(bool resetGame)
     }
 
     // Tính toán tọa độ màn hình thực tế cho con trỏ tại ô (0, 0)
-    // Dựa trên công thức cũ của bạn: x = 4*j + LEFT + 2 và y = 2*i + TOP + 1
+    // Dựa trên công thức cũ: x = 4*j + LEFT + 2 và y = 2*i + TOP + 1
     _X = 4 * _COL + LEFT + 2;
     _Y = 2 * _ROW + TOP + 1;
 }

@@ -1,5 +1,9 @@
 #include "../../include/Model.h"
 
+// Các biến _ROW, _COL giờ chỉ cần khai báo cục bộ ở Logic.cpp để dùng tạm
+static int _CURRENT_ROW = -1;
+static int _CURRENT_COL = -1;
+
 // Hàm phụ trợ: phóng tia kiểm tra 1 hướng (dx, dy)
 int CountPieces(int row, int col, int dx, int dy, int& blocks) {
 	int current = _BOARD[row][col];
@@ -30,6 +34,8 @@ int CountPieces(int row, int col, int dx, int dy, int& blocks) {
 }
 
 int TestBoard() {
+	if (_CURRENT_ROW < 0 || _CURRENT_COL < 0) return 0;
+
 	int current = _BOARD[_ROW][_COL];
 	if (current == 0) return 0;
 
@@ -63,17 +69,22 @@ int TestBoard() {
 	return 0; // Hòa
 }
 
-int CheckBoard() // Không cần truyền pX, pY nữa vì đã dùng _ROW, _COL toàn cục
-{
-	// Kiểm tra xem ô tại vị trí con trỏ hiện tại có trống không
-	if (_BOARD[_ROW][_COL] == 0)
-	{
-		if (_TURN == true)
-			_BOARD[_ROW][_COL] = -1; // X đánh
-		else
-			_BOARD[_ROW][_COL] = 1; // O đánh
+int CheckBoard() {
+	// Nếu toạ độ ngoài bảng
+	if (_ROW < 0 || _ROW >= BOARD_SIZE || _COL < 0 || _COL >= BOARD_SIZE)
+		return 0;
 
-		return _BOARD[_ROW][_COL]; // Trả về giá trị vừa đánh (-1 hoặc 1)
+	// Nếu nhấp trúng ô trống
+	if (_BOARD[_ROW][_COL] == 0) {
+		// Ghi quân cờ dựa theo lượt
+		_BOARD[_ROW][_COL] = _TURN ? -1 : 1;
+
+		// Lưu lại vị trí để hàm TestBoard lát nữa có cái mà quét
+		_CURRENT_ROW = _ROW;
+		_CURRENT_COL = _COL;
+
+		// Chú ý: Việc đổi lượt (_TURN = !_TURN) sẽ để bên File chạy (main.cpp) đảm nhận
+		return _BOARD[_ROW][_COL];
 	}
-	return 0; // Ô đã có quân, không cho đánh
+	return 0; // Click vào ô có cờ
 }

@@ -1,4 +1,5 @@
 #include "../../include/View.h"
+#include <windows.h> 
 
 using namespace std;
 
