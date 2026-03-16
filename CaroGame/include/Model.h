@@ -1,37 +1,27 @@
 #ifndef MODEL_H
 #define MODEL_H
 #include "Common.h"
+#include <vector>
 
-void ResetData();
+void ResetData(bool resetGame = false);
+void SaveGameProgress(const char* filename);
+void LoadGameProgress(const char* filename, std::vector<Progress>& history);
+void PrintGameHistory();
 void GarbageCollect();
 
 /**
- * @brief Kiểm tra trạng thái toàn cục của bàn cờ sau một nước đi.
- *
- * Hàm này quét trên 4 trục (Ngang, Dọc, Chéo chính, Chéo phụ) giao tại vị trí
- * quân cờ vừa đánh để kiểm tra điều kiện thắng (5 quân liên tiếp và không bị chặn 2 đầu).
- * Đồng thời, hàm rà soát toàn bộ bàn cờ xem có ô trống nào còn lại không để thiết lập kết quả hòa.
- *
- * @param lastRow Vị trí hàng của quân cờ ở nước đi cuối cùng.
- * @param lastCol Vị trí cột của quân cờ ở nước đi cuối cùng.
- * @return Giá trị người thắng cuộc (-1 cho X, 1 cho O), 2 nếu kết quả là hòa, hoặc 0 nếu đánh tiếp.
+ * @brief Kiểm tra trạng thái bàn cờ (thắng, thua, hòa) ngay sau một nước đi.
+ * 
+ * Sử dụng thuật toán phóng tia từ vị trí hiện tại (_ROW, _COL) theo 4 trục để đếm 
+ * số quân cờ cùng màu liên tiếp.
+ * @return Giá trị người thắng (-1 cho X, 1 cho O), 0 nếu kết quả là hòa (hết ô), hoặc 2 nếu ván đấu tiếp tục.
  */
-int TestBoard(int lastRow, int lastCol);
+int TestBoard();
 
 /**
- * @brief Đếm số lượng quân cờ liên tiếp trên một hướng chỉ định.
- *
- * Hàm này dùng vòng lặp để đếm số quân cờ cùng màu liên tiếp trên một hướng
- * được xác định bởi vector (dx, dy). Đồng thời đếm số đầu bị chặn bởi mép bàn cờ
- * hoặc quân đối phương.
- *
- * @param row Vị trí hàng của quân cờ đang kiểm tra.
- * @param col Vị trí cột của quân cờ đang kiểm tra.
- * @param dx Bước dịch chuyển theo trục x (cột).
- * @param dy Bước dịch chuyển theo trục y (hàng).
- * @param[out] blocks Biến tham chiếu lưu lại số lượng đầu bị chặn trên hướng này.
- * @return Số quân cờ đếm được liên tục và cùng màu theo hướng (dx, dy).
+ * @brief Cố gắng đặt quân cờ xuống bàn dựa trên lượt đi hiện tại (_TURN) và vị trí con trỏ (_ROW, _COL).
+ * @return Giá trị quân cờ vừa ghi (-1 cho X, 1 cho O) hoặc 0 nếu không hợp lệ (ô đã có cờ).
  */
-int CheckBoard(int pX, int pY);
+int CheckBoard();
 
 #endif
