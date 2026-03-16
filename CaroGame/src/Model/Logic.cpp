@@ -1,54 +1,66 @@
 #include "../../include/Model.h"
 
-int TestBoard()
-{
-	bool hasEmptyCell = false;
+// Hàm phụ trợ: phóng tia kiểm tra 1 hướng (dx, dy)
+int CountPieces(int row, int col, int dx, int dy, int& blocks) {
+	int current = _BOARD[row][col];
+	int count = 0;
+	blocks = 0;
 
-	for (int i = 0; i < BOARD_SIZE; i++)
-	{
-		for (int j = 0; j < BOARD_SIZE; j++)
-		{
-			if (_BOARD[i][j] != 0) // Nếu ô có quân cờ
-			{
-				char current = _BOARD[i][j];
+	for (int step = 1; step <= 5; step++) {
+		int r = row + step * dy;
+		int c = col + step * dx;
 
-				// 1. Kiểm tra hàng ngang
-				if (j <= BOARD_SIZE - 5 &&
-					_BOARD[i][j + 1] == current && _BOARD[i][j + 2] == current &&
-					_BOARD[i][j + 3] == current && _BOARD[i][j + 4] == current)
-					return current;
+		// Nếu đụng vách bàn cờ -> Tính là 1 đầu bị chặn
+		if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE) {
+			blocks++;
+			break;
+		}
 
-				// 2. Kiểm tra hàng dọc
-				if (i <= BOARD_SIZE - 5 &&
-					_BOARD[i + 1][j] == current && _BOARD[i + 2][j] == current &&
-					_BOARD[i + 3][j] == current && _BOARD[i + 4][j] == current)
-					return current;
+		// Đếm quân cùng màu
+		if (_BOARD[r][c] == current) count++;
+		// Đụng quân địch -> Tính là 1 đầu bị chặn
+		else if (_BOARD[r][c] != 0) {
+			blocks++;
+			break;
+		}
+		// Đụng ô trống -> Đường mở, không bị chặn
+		else break;
+	}
+	return count;
+}
 
-				// 3. Kiểm tra chéo xuôi (\)
-				if (i <= BOARD_SIZE - 5 && j <= BOARD_SIZE - 5 &&
-					_BOARD[i + 1][j + 1] == current && _BOARD[i + 2][j + 2] == current &&
-					_BOARD[i + 3][j + 3] == current && _BOARD[i + 4][j + 4] == current)
-					return current;
+int TestBoard() {
+	int current = _BOARD[_ROW][_COL];
+	if (current == 0) return 0;
 
-				// 4. Kiểm tra chéo ngược (/)
-				if (i >= 4 && j <= BOARD_SIZE - 5 &&
-					_BOARD[i - 1][j + 1] == current && _BOARD[i - 2][j + 2] == current &&
-					_BOARD[i - 3][j + 3] == current && _BOARD[i - 4][j + 4] == current)
-					return current;
-			}
-			else
-			{
-				hasEmptyCell = true; // Ghi nhận vẫn còn ô trống
-			}
+	// Mảng 4 hướng: Ngang (1,0), Dọc (0,1), Chéo chính (1,1), Chéo phụ (1,-1)
+	int directions[4][2] = { {1,0}, {0,1}, {1,1}, {1,-1} };
+
+	for (int i = 0; i < 4; i++) {
+		int dx = directions[i][0];
+		int dy = directions[i][1];
+
+		int blocks1 = 0, blocks2 = 0;
+
+		// Quét tới và quét lùi trên cùng 1 trục từ vị trí (_ROW, _COL)
+		int countForward = CountPieces(_ROW, _COL, dx, dy, blocks1);
+		int countBackward = CountPieces(_ROW, _COL, -dx, -dy, blocks2);
+
+		int totalCount = 1 + countForward + countBackward;
+		int totalBlocks = blocks1 + blocks2;
+
+		// Đủ 5 quân và không bị chặn cả 2 đầu
+		if (totalCount >= 5 && totalBlocks < 2) return current; // Trả về người thắng (-1 hoặc 1)
+	}
+
+	// Kiểm tra Hòa
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		for (int j = 0; j < BOARD_SIZE; j++) {
+			if (_BOARD[i][j] == 0) return 2; // Vẫn còn ô trống -> Đánh tiếp
 		}
 	}
 
-	// Nếu không ai thắng và vẫn còn ô trống -> Tiếp tục chơi
-	if (hasEmptyCell)
-		return 2;
-
-	// Nếu không ai thắng và hết ô trống -> Hòa
-	return 0;
+	return 0; // Hòa
 }
 
 int CheckBoard() // Không cần truyền pX, pY nữa vì đã dùng _ROW, _COL toàn cục

@@ -1,7 +1,10 @@
 #include "../../include/Model.h"
 #include <fstream>
 
+using namespace std;
+
 // ĐỊNH NGHĨA BIẾN TOÀN CỤC TẠI ĐÂY (Chỉ 1 lần duy nhất)
+_POINT _A[BOARD_SIZE][BOARD_SIZE];   // Mảng 2 chiều chứa dữ liệu bàn cờ (Logic)
 char _BOARD[BOARD_SIZE][BOARD_SIZE]; // Mảng này dùng để lưu trạng thái bàn cờ khi cần thiết (ví dụ: lưu vào file)
 int _ROW, _COL;                      // Biến toàn cục lưu vị trí logic của ô hiện hành (hàng, cột)
 bool _TURN;                          // Biến toàn cục lưu lượt chơi hiện hành (true = X, false = O)

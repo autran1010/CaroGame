@@ -3,6 +3,8 @@
 #include "../include/Model.h"
 #include "../include/Control.h"
 
+using namespace std;
+
 int main()
 {
 	FixConsoleWindow();

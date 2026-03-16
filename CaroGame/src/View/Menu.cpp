@@ -1,5 +1,6 @@
-
 #include "../../include/View.h"
+
+using namespace std;
 
 void FixConsoleWindow()
 {

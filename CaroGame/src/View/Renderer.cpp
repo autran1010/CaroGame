@@ -1,4 +1,7 @@
 #include "../../include/View.h"
+
+using namespace std;
+
 extern void DrawBoard(int pSize)
 {
 	for (int i = 0; i <= pSize; i++)
