@@ -1,4 +1,5 @@
 #include "../../include/View.h"
+#include "../../include/input_mouse.h"
 #include <raylib.h>
 
 void FixConsoleWindow()
@@ -39,6 +40,8 @@ void DrawMainMenu(int selectedOption) {
 	const char* options[] = { "NEW GAME", "LOAD GAME", "SETTINGS", "EXIT" };
 
 	for (int i = 0; i < 4; i++) {
+		Rectangle buttonRect = { 300.0f, (float)(220 + i * 50), 220.0f, 40.0f };
+
 		Color color = (i == selectedOption) ? RED : BLACK; // Đổi màu khi chọn
 		int fontSize = (i == selectedOption) ? 30 : 25;
 
@@ -66,4 +69,17 @@ void DrawPlayerStats() {
 		DrawText("PLAYER X", 620, 300, 22, BLUE);
 	else
 		DrawText("PLAYER O", 620, 300, 22, RED);
+}
+
+int GetMenuOptionFromMouse(const MouseState& mouse)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		Rectangle buttonRect = { 300.0f, (float)(220 + i * 50), 220.0f, 40.0f };
+
+		if (IsMouseOverRect(mouse, buttonRect))
+			return i;
+	}
+
+	return -1;
 }

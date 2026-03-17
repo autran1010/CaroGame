@@ -178,6 +178,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Control\Input.cpp" />
+    <ClCompile Include="src\Control\input_mouse.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model\Data.cpp" />
     <ClCompile Include="src\Model\Logic.cpp" />
@@ -187,10 +188,12 @@
   <ItemGroup>
     <ClInclude Include="include\Common.h" />
     <ClInclude Include="include\Control.h" />
+    <ClInclude Include="include\input_mouse.h" />
     <ClInclude Include="include\Model.h" />
     <ClInclude Include="include\View.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="game_progress.dat" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

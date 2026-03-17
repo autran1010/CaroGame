@@ -17,6 +17,7 @@
     <ClCompile Include="src\View\Menu.cpp">
       <Filter>View</Filter>
     </ClCompile>
+    <ClCompile Include="src\Control\input_mouse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Common.h">
@@ -31,6 +32,7 @@
     <ClInclude Include="include\View.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="include\input_mouse.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Model">
@@ -48,5 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="game_progress.dat" />
   </ItemGroup>
 </Project>

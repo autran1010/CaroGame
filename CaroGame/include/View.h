@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.h"
+#include "input_mouse.h"
 
 void FixConsoleWindow();
 void GotoXY(int x, int y);
@@ -9,3 +10,4 @@ int AskContinue(int pWhoWin);
 void DrawMainMenu(int selectedOption);
 void DrawPlayerStats();
 void DrawPieces();
+int GetMenuOptionFromMouse(const MouseState& mouse);
