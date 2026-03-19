@@ -11,7 +11,7 @@ int _COMMAND;                        // Biến toàn cục lưu lệnh người 
 int _X, _Y;                          // Biến toàn cục lưu vị trí hiện hành của con trỏ màn hình
 short XScore = 0;                    // Điểm số của người chơi X
 short OScore = 0;                    // Điểm số của người chơi O
-short NumberOfRounds = 1;            // Số ván đã chơi (bắt đầu từ 1)
+short NumberOfRounds = 0;            // Số ván đã chơi (bắt đầu từ 1)
 
 void ResetData(bool resetGame)
 {
@@ -90,7 +90,6 @@ vector<Progress> LoadGameProgress(const char* filename)
     ifstream inFile(filename, ios::binary);
     if (!inFile)
     {
-        cerr << "Khong the mo file de doc tru!" << endl;
         return history;
     }
 
@@ -127,9 +126,9 @@ void DrawHistoryMenu(const vector<Progress>& history, int selectedIdx) {
         // Format chuỗi hiển thị: "Tên ván - Player 1 vs Player 2 - 1's score vs 2's score"
         // Giả sử Progress có các trường: saveName, p1Name, p2Name, p1Score, p2Score
         char buffer[256];
-        sprintf_s(buffer, "%d. %s: %s (%d) vs %s (%d)", i + 1,
+        sprintf_s(buffer, "%d. %s: %s (%d) vs %s (%d) . Hiep: %d", i + 1,
             history[i].gameName, history[i].playerXName, history[i].playerXScore,
-            history[i].playerOName, history[i].playerOScore);
+            history[i].playerOName, history[i].playerOScore, history[i].numberOfRounds + 1);
 
         DrawText(buffer, 170, posY, 20, textColor);
     }

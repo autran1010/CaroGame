@@ -62,6 +62,8 @@ int main() {
             }
 
             if (IsKeyPressed(KEY_S)) {
+
+				SaveGameProgress("game_progress.dat");
 				gameState = 4; // Chuyển sang trạng thái hiển thị thông báo lưu
             }
             if (IsKeyPressed(KEY_SPACE))
@@ -72,6 +74,7 @@ int main() {
         }
         else if (gameState == 2) {
             if (IsKeyPressed(KEY_S)) {
+				SaveGameProgress("game_progress.dat");
                 gameState = 4; // Chuyển sang trạng thái hiển thị thông báo lưu
             }
             if (IsKeyPressed(KEY_ENTER)) { StartGame(); gameState = 1; }
