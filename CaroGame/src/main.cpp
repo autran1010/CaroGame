@@ -9,6 +9,32 @@
 #include "audio_manager.h"
 #include <algorithm>
 
+/*
+    File này là nơi chạy chính của chương trình.
+
+    File này làm:
+    - Khởi tạo cửa sổ game.
+    - Load font.
+    - Tạo settings và audio ban đầu.
+    - Chạy vòng lặp game chính.
+    - Gọi hàm update và draw theo màn hình hiện tại.
+    - Giải phóng tài nguyên khi thoát.
+
+    Cách hoạt động:
+    - Mỗi frame lấy MouseState từ input_mouse.
+    - Update logic trước.
+    - Sau đó BeginDrawing() rồi mới vẽ giao diện.
+    - currentScreen quyết định đang ở menu chính, settings, play hay about.
+
+    Muốn sửa ở đâu:
+    - Muốn đổi luồng chuyển màn hình: sửa switch(currentScreen).
+    - Muốn đổi font: sửa LoadFontSafe() hoặc FONT_PATH.
+    - Muốn thêm màn hình mới: thêm state và thêm case update/draw.
+*/
+
+// Load font an toàn.
+// Nếu file font tồn tại thì load font ngoài.
+// Nếu không có thì dùng font mặc định của raylib để tránh crash.   
 static Font LoadFontSafe(const char* path, int size)
 {
     if (FileExists(path))
@@ -16,6 +42,10 @@ static Font LoadFontSafe(const char* path, int size)
 
     return GetFontDefault();
 }
+
+// Hàm main điều khiển toàn bộ chương trình.
+// Đây là nơi nối các file lại với nhau:
+// input -> update logic -> draw giao diện -> giải phóng tài nguyên.
 
 int main()
 {

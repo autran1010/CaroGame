@@ -1,7 +1,6 @@
 #include "ui_panel.h"
 #include "src/Model/colors.h"
 #include "src/View/ui_fx.h"
-
 // Vẽ khung panel ( chỉ cái khung viền bên ngoài )
 void DrawNeonPanelFrame(Rectangle outer, Rectangle inner, Color glowColor, Color lineColor)
 {
@@ -37,6 +36,7 @@ void DrawInfoCell(Font font, Rectangle rect, const char* left, const char* right
     );
 }
 
+// Vẽ tiêu đề của một section trong menu, có một đường kẻ ngang bên dưới để phân tách
 void DrawSectionTitle(Font font, const char* text, Vector2 pos)
 {
     DrawTextEx(font, text, pos, 24.0f, 1.2f, COLOR_TEXT_MAIN);
@@ -49,6 +49,7 @@ void DrawSectionTitle(Font font, const char* text, Vector2 pos)
     );
 }
 
+// Vẽ một ô giá trị với hiệu ứng neon, có thể thay đổi màu sắc và độ sáng khi hover
 void DrawValueBox(Font font, Rectangle rect, const std::string& text, Color accent, bool hovered)
 {
     DrawGlowRect(rect, accent, hovered ? 6 : 4, 0.02f, 2.2f);
@@ -68,6 +69,7 @@ void DrawValueBox(Font font, Rectangle rect, const std::string& text, Color acce
     );
 }
 
+// Vẽ panel bên cạnh của menu chính với tiêu đề, các chế độ chơi và thông tin hệ thống
 void DrawMainMenuSidePanel(Font fontTitle, Font fontSmall)
 {
     Rectangle outer{ 82, 120, 320, 580 };

@@ -10,6 +10,33 @@
 #include <cstdio>
 #include <algorithm>
 
+/*
+    File này điều khiển toàn bộ màn hình settings.
+
+    File này làm:
+    - Chia settings thành 3 tab: GRAPHICS, AUDIO, GAME UI.
+    - Vẽ slider và toggle.
+    - Xử lý click đổi tab.
+    - Xử lý bấm mũi tên trái/phải của slider.
+    - Xử lý kéo slider bằng chuột.
+    - Xử lý bật/tắt toggle.
+    - Quay lại menu chính khi bấm BACK.
+
+    Cách hoạt động:
+    - gCurrentTab lưu tab đang mở.
+    - gActiveSlider lưu slider nào đang được kéo.
+    - UpdateSettingsUI() quyết định update tab nào.
+    - DrawSettingsUI() vẽ giao diện đúng theo tab hiện tại.
+
+    Muốn sửa ở đâu:
+    - Muốn đổi bố cục: sửa các hằng số layout ở đầu file.
+    - Muốn đổi cách slider hoạt động: sửa HandleSliderControl().
+    - Muốn đổi cách toggle hoạt động: sửa HandleToggleControl().
+    - Muốn đổi giao diện settings: sửa các hàm Draw...
+*/
+
+// Các hằng số layout của màn hình settings.
+// Nếu muốn đổi vị trí khung, nút, slider, toggle thì sửa chủ yếu ở đây.
 namespace
 {
     // ===== LAYOUT CHÍNH =====
@@ -33,6 +60,7 @@ namespace
     constexpr float TITLE_Y = 58.0f;
     constexpr float ROW_GAP = 50.0f;
 
+    // Xác định slider nào đang được kéo ở thời điểm hiện tại.
     enum DragSliderId
     {
         DRAG_NONE = -1,
@@ -42,8 +70,10 @@ namespace
         DRAG_SFX_VOLUME
     };
 
+    // Lưu slider đang active để hỗ trợ kéo liên tục khi giữ chuột.
     static DragSliderId gActiveSlider = DRAG_NONE;
 
+    // Xác định tab settings hiện tại.
     enum SettingsTab
     {
         TAB_GRAPHICS = 0,
@@ -51,6 +81,7 @@ namespace
         TAB_GAME_UI
     };
 
+    // Tab đang mở mặc định là GRAPHICS.
     static SettingsTab gCurrentTab = TAB_GRAPHICS;
 
     constexpr Rectangle TAB_GRAPHICS_BTN = { 475, 175, 190, 44 };
@@ -67,6 +98,7 @@ namespace
         Rectangle trackInner;
     };
 
+    // Đổi giá trị float 0.0 -> 1.0 thành chuỗi phần trăm để hiển thị.
     std::string PercentText(float value)
     {
         char buffer[32];
@@ -74,17 +106,21 @@ namespace
         return std::string(buffer);
     }
 
+    // Đổi bool thành chữ ON hoặc OFF.
     std::string OnOffText(bool value)
     {
         return value ? "ON" : "OFF";
     }
 
+    // Tăng hoặc giảm value theo step và giữ nó trong khoảng 0 đến 1.
     void StepFloat(float& value, float step)
     {
         value += step;
         value = std::clamp(value, 0.0f, 1.0f);
     }
 
+    // Tạo ra các phần hình học của một slider:
+    // mũi tên trái, track, mũi tên phải, ô hiển thị giá trị, knob, track trong.
     SliderParts MakeSliderParts(float y, float value)
     {
         SliderParts p{};
@@ -112,11 +148,13 @@ namespace
         return p;
     }
 
+    // Tạo vùng bấm của toggle theo vị trí dòng hiện tại.
     Rectangle MakeToggleBox(float y)
     {
         return Rectangle{ CONTROL_X + ARROW_W + CONTROL_GAP, y - 4.0f, TOGGLE_W, CONTROL_H };
     }
 
+    // Vẽ một khối nhỏ dùng chung cho arrow box, track, value box, toggle box.
     void DrawMiniBox(Rectangle rect, Color accent, bool hovered)
     {
         DrawGlowRect(rect, accent, hovered ? 5 : 3, 0.02f, 2.0f);
@@ -127,6 +165,7 @@ namespace
         DrawRectangleRounded(inner, 0.16f, 10, FadeColorEx(Color{ 5, 10, 18, 255 }, 0.98f));
     }
 
+    // Vẽ ô mũi tên trái hoặc phải của slider.
     void DrawArrowBox(Font font, Rectangle rect, const char* text, Color accent, bool hovered)
     {
         DrawMiniBox(rect, accent, hovered);
@@ -145,6 +184,7 @@ namespace
         );
     }
 
+    // Vẽ slider phần trăm hoàn chỉnh.
     void DrawPercentSlider(
         Font font,
         const MouseState& mouse,
@@ -181,6 +221,7 @@ namespace
         );
     }
 
+    // Vẽ toggle ON/OFF.
     void DrawToggleControl(
         Font font,
         const MouseState& mouse,
@@ -202,6 +243,7 @@ namespace
         );
     }
 
+    // Vẽ một dòng settings dạng slider: label bên trái, slider bên phải.
     void DrawSliderRow(
         Font font,
         const MouseState& mouse,
@@ -224,6 +266,7 @@ namespace
         DrawPercentSlider(font, mouse, y, value, accent, active);
     }
 
+    // Vẽ một dòng settings dạng toggle: label bên trái, toggle bên phải.
     void DrawToggleRow(
         Font font,
         const MouseState& mouse,
@@ -245,6 +288,7 @@ namespace
         DrawToggleControl(font, mouse, y, value, accent);
     }
 
+    // Vẽ nút tab ở đầu màn hình settings.
     void DrawTabButton(Font font, const MouseState& mouse, Rectangle rect, const char* text, bool active)
     {
         bool hovered = IsMouseOverRect(mouse, rect);
@@ -273,6 +317,8 @@ namespace
         );
     }
 
+    // Xử lý click đổi tab.
+    // Khi đổi tab thì reset slider đang kéo để tránh lỗi kéo dở.
     void UpdateTabButtons(const MouseState& mouse, AudioAssets& audio, const AppSettings& settings)
     {
         if (IsMouseClickedRect(mouse, TAB_GRAPHICS_BTN))
@@ -301,12 +347,15 @@ namespace
         }
     }
 
+    // Tính lại value của slider dựa vào vị trí chuột trên track.
     void SetSliderValueFromMouse(float& value, const SliderParts& p, float mouseX)
     {
         float t = (mouseX - p.trackInner.x) / p.trackInner.width;
         value = std::clamp(t, 0.0f, 1.0f);
     }
 
+    // Xử lý toàn bộ tương tác của một slider:
+    // click mũi tên trái/phải hoặc giữ và kéo knob/track.
     void HandleSliderControl(
         const MouseState& mouse,
         float y,
@@ -348,6 +397,7 @@ namespace
         }
     }
 
+    // Xử lý bật/tắt một toggle khi click vào hộp toggle.
     void HandleToggleControl(
         const MouseState& mouse,
         float y,
@@ -366,6 +416,8 @@ namespace
     }
 }
 
+// Xử lý toàn bộ logic của màn hình settings.
+// Hàm này có thể đổi dữ liệu trong AppSettings và đổi currentScreen về menu chính.
 void UpdateSettingsUI(AppSettings& settings, const MouseState& mouse, ScreenState& currentScreen, AudioAssets& audio)
 {
     if (!mouse.leftDown)
@@ -401,6 +453,8 @@ void UpdateSettingsUI(AppSettings& settings, const MouseState& mouse, ScreenStat
         currentScreen = SCREEN_MAIN_MENU;
     }
 }
+
+// Vẽ toàn bộ màn hình settings theo dữ liệu hiện tại trong AppSettings.
 
 void DrawSettingsUI(Font fontTitle, Font fontSmall, const AppSettings& settings, const MouseState& mouse)
 {

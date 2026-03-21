@@ -7,8 +7,34 @@
 #include "src/audio_manager.h"
 #include <algorithm>
 
+/*
+    File này điều khiển toàn bộ màn hình menu chính.
+
+    File này làm:
+    - Kiểm tra hover và click của từng nút.
+    - Phát âm thanh hover và click.
+    - Cập nhật animation hover/click.
+    - Chuyển màn hình khi bấm nút.
+    - Vẽ nền, panel trái, tiêu đề và toàn bộ button.
+
+    Cách hoạt động:
+    - UpdateMainMenuUI() duyệt qua tất cả gButtons.
+    - Nếu chuột mới đi vào nút thì phát hover sound.
+    - Nếu click vào nút thì phát click sound và đổi màn hình.
+    - DrawMainMenuUI() chỉ lo phần hiển thị.
+
+    Muốn sửa ở đâu:
+    - Muốn đổi hành vi khi bấm nút: sửa switch trong UpdateMainMenuUI().
+    - Muốn đổi cách vẽ menu chính: sửa DrawMainMenuUI().
+*/
+
+// Lưu trạng thái hover của từng nút ở frame trước.
+// Mục đích: chỉ phát tiếng hover 1 lần khi chuột vừa đi vào nút.
 static bool gWasHover[32] = {};
 
+// Xử lý logic của menu chính.
+// Duyệt từng nút để kiểm tra hover/click, cập nhật animation,
+// phát âm thanh và chuyển currentScreen khi cần.
 void UpdateMainMenuUI(
     const MouseState& mouse,
     float dt,
@@ -29,6 +55,7 @@ void UpdateMainMenuUI(
         {
             PlayMenuHover(audio);
         }
+
 
         gWasHover[i] = mouseHover;
 
@@ -65,6 +92,8 @@ void UpdateMainMenuUI(
     }
 }
 
+// Vẽ toàn bộ menu chính.
+// Gồm background, panel trái, tiêu đề game và danh sách nút.
 void DrawMainMenuUI(
     Font fontTitle,
     Font fontSmall,

@@ -5,6 +5,17 @@
 #include "src/Model/app_settings.h"
 #include "src/audio_manager.h"
 
+/*
+    File này khai báo phần điều khiển menu chính.
+
+    Có 2 phần chính:
+    - UpdateMainMenuUI(): xử lý tương tác và animation.
+    - DrawMainMenuUI(): vẽ giao diện menu chính.
+
+    Ý nghĩa:
+    - Tách update và draw để code dễ đọc hơn.
+*/
+
 void UpdateMainMenuUI(
     const MouseState& mouse,
     float dt,

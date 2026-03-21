@@ -3,16 +3,38 @@
 #include "ui_fx.h"
 #include <cmath>
 
+/*
+    File này dùng để xử lý và vẽ từng button trong menu.
+
+    File này làm:
+    - Kiểm tra chuột có hover vào button không.
+    - Kiểm tra chuột có click vào button không.
+    - Vẽ nền, viền, chữ và hiệu ứng neon cho button.
+    - Thêm hiệu ứng khi hover và khi click.
+
+    Cách hoạt động:
+    - ui_main_menu.cpp truyền một NeonButton vào đây.
+    - File này sẽ dựa vào hoverAnim và clickAnim để quyết định nút sáng bao nhiêu,
+      viền mạnh bao nhiêu, có sweep hay scanline hay không.
+
+    Ý nghĩa:
+    - Tách riêng cách vẽ button ra khỏi logic màn hình chính.
+*/
+
+// Kiểm tra chuột có đang hover lên nút không.
 bool IsButtonHovered(const NeonButton& btn, const MouseState& mouse)
 {
     return IsMouseOverRect(mouse, btn.rect);
 }
 
+// Kiểm tra chuột có click vào nút không.
 bool IsButtonClicked(const NeonButton& btn, const MouseState& mouse)
 {
     return IsMouseClickedRect(mouse, btn.rect);
 }
 
+// Vẽ phần nền của nút.
+// Nền sẽ sáng hơn khi hoverAnim tăng.
 static void DrawButtonFill(Rectangle rect, Color tint, float hoverAnim)
 {
     Color fill1 = Color{
@@ -29,6 +51,7 @@ static void DrawButtonFill(Rectangle rect, Color tint, float hoverAnim)
         250
     };
 
+    
     DrawRectangleRounded(rect, 0.02f, 12, fill1);
 
     Rectangle inner{
@@ -57,6 +80,8 @@ static void DrawButtonFill(Rectangle rect, Color tint, float hoverAnim)
     );
 }
 
+// Vẽ phần viền của nút.
+// Hover càng cao thì viền càng sáng, click thì có cảm giác nhấn xuống.
 static void DrawButtonFrame(Rectangle rect, Color color, float hoverAnim, float clickAnim)
 {
     float outer = 1.5f + hoverAnim * 1.6f + clickAnim * 0.2f;
@@ -75,6 +100,8 @@ static void DrawButtonFrame(Rectangle rect, Color color, float hoverAnim, float 
     DrawCornerBrackets(rect, color, 0.18f + hoverAnim * 0.35f);
 }
 
+// Vẽ chữ chính và chữ phụ của nút.
+// ClickAnim làm chữ lệch xuống nhẹ để tạo cảm giác bấm.
 static void DrawButtonText(
     const NeonButton& btn,
     Rectangle drawRect,
@@ -121,6 +148,8 @@ static void DrawButtonText(
     }
 }
 
+// Vẽ hoàn chỉnh một nút neon.
+// Hàm này ghép nền + viền + glow + sweep hover + scanline click + text.
 void DrawNeonButton(
     const NeonButton& btn,
     bool forceFocus,

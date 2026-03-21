@@ -1,5 +1,27 @@
 #include "audio_manager.h"
 
+/*
+    File này quản lý âm thanh của chương trình.
+
+    File này làm:
+    - Khởi tạo thiết bị âm thanh.
+    - Load nhạc nền, click sound, hover sound nếu file tồn tại.
+    - Cập nhật volume mỗi frame theo AppSettings.
+    - Phát tiếng click và hover.
+    - Giải phóng tài nguyên âm thanh khi thoát.
+
+    Cách hoạt động:
+    - main.cpp gọi InitGameAudio() lúc bắt đầu.
+    - Mỗi frame gọi UpdateGameAudio().
+    - File menu và settings gọi PlayMenuClick()/PlayMenuHover() khi có tương tác.
+    - Khi thoát gọi ShutdownGameAudio().
+
+    Muốn sửa ở đâu:
+    - Muốn đổi file âm thanh: sửa đường dẫn trong InitGameAudio().
+    - Muốn đổi cách phát click/hover: sửa PlayMenuClick() hoặc PlayMenuHover().
+*/
+
+// Khởi tạo audio device và load các file âm thanh nếu có.
 void InitGameAudio(AudioAssets& audio)
 {
     InitAudioDevice();
@@ -24,6 +46,7 @@ void InitGameAudio(AudioAssets& audio)
     }
 }
 
+// Cập nhật stream nhạc nền và volume theo settings hiện tại.
 void UpdateGameAudio(AudioAssets& audio, const AppSettings& settings)
 {
 	// Cập nhật âm nhạc nền
@@ -44,6 +67,7 @@ void UpdateGameAudio(AudioAssets& audio, const AppSettings& settings)
     }
 }
 
+// Giải phóng tài nguyên âm thanh trước khi thoát chương trình.
 void ShutdownGameAudio(AudioAssets& audio)
 {
     if (audio.musicLoaded)
@@ -60,6 +84,7 @@ void ShutdownGameAudio(AudioAssets& audio)
     CloseAudioDevice();
 }
 
+// Phát tiếng click menu nếu settings cho phép và sound đã load.
 void PlayMenuClick(AudioAssets& audio, const AppSettings& settings)
 {
     if (!settings.menuClickSound) return;
@@ -69,6 +94,8 @@ void PlayMenuClick(AudioAssets& audio, const AppSettings& settings)
     PlaySound(audio.clickSound);
 }
 
+// Phát tiếng hover nếu hover sound đã load.
+// Có kiểm tra để tránh phát chồng quá nhiều lần liên tục.
 void PlayMenuHover(AudioAssets& audio)
 {
     if (!audio.hoverLoaded) return;
